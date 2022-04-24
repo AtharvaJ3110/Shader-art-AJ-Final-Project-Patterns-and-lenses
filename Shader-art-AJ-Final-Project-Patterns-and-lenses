@@ -1,0 +1,46 @@
+layout (location=0) out vec4 fragColor;
+
+uniform vec2 iResolution;
+uniform float iTime;
+
+//import camera footage from Touchdesigner;
+vec4 footage = texture(sTD2DInputs[0], vUV.st);	
+
+void main()
+{
+
+    vec2 uv = (gl_FragCoord.xy-iResolution.xy*.5)/iResolution.y;
+    
+	//rotate using matrix transform
+    uv *= mat2(.707, -.707, .707, .707);
+    
+    uv *= 15.;
+     
+    //create Grid
+    vec2 gv = fract(uv)-.5; 
+    
+    //create id for each box 
+	vec2 id = cos(uv)*0.2*footage.x;
+	vec3 col= vec3(0);
+    
+	float m = 0.;
+    float t;
+    
+    //calculate offset  from center of cell
+    for(float y=-1.; y<=1.; y++) {
+    	for(float x=-1.; x<=1.; x++) {
+            vec2 offs = vec2(x, y);
+            
+            //create and animate circles on grid
+            t = footage.x-iTime+length(id-offs)*.2;
+            float r = mix(.4, 1.5, sin(t)*.2+.9);
+    		float c = smoothstep(r, r*.9, length(gv+offs));
+    		m = m*(1.-c) + c*(1.-m);
+        //add color and subtract footage values from color values
+    		col.rg = id*footage.x;
+    		col+=fract(m)+sin(m)-footage.x;
+        }  
+    }
+
+    fragColor = vec4(col,1.0);
+}
