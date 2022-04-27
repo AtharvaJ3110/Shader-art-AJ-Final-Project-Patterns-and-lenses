@@ -12,7 +12,7 @@ void main()
 
     vec2 uv = (gl_FragCoord.xy-iResolution.xy*.5)/iResolution.y;
     
-	//rotate using matrix transform
+	//rotate canvas using matrix transform
     uv *= mat2(.707, -.707, .707, .707);
     
     uv *= 15.;
